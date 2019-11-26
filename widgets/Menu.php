@@ -170,31 +170,9 @@ class Menu extends \yii\widgets\Menu
     protected function isItemActive($item)
     {
         if (isset($item['url']) && is_array($item['url']) && isset($item['url'][0])) {
-            $route = Yii::getAlias($item['url'][0]);
-            if ($route[0] !== '/' && Yii::$app->controller) {
-                $route = Yii::$app->controller->module->getUniqueId() . '/' . $route;
-            }
-
-            if (
-                ($route == '/' && $this->route == 'site/index')
-                || (substr($route, -1) == '/' && $this->route == ltrim($route, '/') . 'index')
-                || ($this->route == ltrim($route, '/'))
-            ) {
-                unset($item['url']['#']);
-                if (count($item['url']) > 1) {
-                    $params = $item['url'];
-                    unset($params[0]);
-                    foreach ($params as $name => $value) {
-                        if ($value !== null && (!isset($this->params[$name]) || $this->params[$name] != $value)) {
-                            return false;
-                        }
-                    }
-                }
-
-                return true;
-            } else {
-
-                return false;
+            foreach ($item['url'] as $url) {
+                $uri = str_replace('/core/web', '', strtok($_SERVER['REQUEST_URI'], '?'));
+                if($uri === $url) return true;
             }
         }
 
